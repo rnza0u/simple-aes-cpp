@@ -1,19 +1,19 @@
-cmake_minimum_required(VERSION 3.18)
+cmake_minimum_required(VERSION 3.13)
 
-project(simple-aes-cpp)
+project(simple-aes-cpp VERSION 1.0.0 DESCRIPTION "A simple and comprehensible AES implementation in C++")
 
-add_library(${PROJECT_NAME} "")
-
-target_sources(${PROJECT_NAME}
-    PRIVATE
-        ${CMAKE_CURRENT_LIST_DIR}/src/AES.cpp
-        ${CMAKE_CURRENT_LIST_DIR}/src/Pkcs7Padding.cpp
-    INTERFACE
-        ${CMAKE_CURRENT_LIST_DIR}/src/AES.h
-        ${CMAKE_CURRENT_LIST_DIR}/src/Pkcs7Padding.h
+add_library(${PROJECT_NAME}
+    src/AES.cpp
+    src/Pkcs7Padding.cpp
 )
 
-target_include_directories(${PROJECT_NAME}
-    INTERFACE
-        ${CMAKE_CURRENT_LIST_DIR}
-)
+set_target_properties(${PROJECT_NAME} PROPERTIES VERSION ${PROJECT_VERSION})
+
+set_target_properties(${PROJECT_NAME} PROPERTIES PUBLIC_HEADER src/AES.h)
+
+# Install library
+install(TARGETS ${PROJECT_NAME} DESTINATION lib/${PROJECT_NAME})
+
+# Install library headers
+file(GLOB HEADERS src/include/*.h)
+install(FILES ${HEADERS} DESTINATION include/${PROJECT_NAME})

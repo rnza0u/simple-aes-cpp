@@ -8,7 +8,6 @@ void PKCS7Padding::AddBlockPadding (uint8_t *buffer, size_t dataLength, size_t b
     
     for (size_t i = 0; i < blockLength; i++)
         buffer[i] = i >= blockLength - paddingValue ? paddingValue : buffer[i];
-    
 };
 
 

@@ -2,7 +2,10 @@
 #include <fstream>
 #include <stdint.h>
 #include <iostream>
-#include <unistd.h>
+
+#ifndef _WIN32
+    #include <unistd.h>
+#endif
 
 #include "AES.h"
 #include "Pkcs7Padding.h"
@@ -107,7 +110,7 @@ int AES::EncryptFile(const string& inputPath, const string& outputPath){
     PKCS7Padding::AddBlockPadding(padding, rest, AES_BLOCK_SIZE);
 
     this->Encrypt(padding, AES_BLOCK_SIZE);
-    out.write((char *) padding, AES_BLOCK_SIZE);
+    out.write((char *)padding, AES_BLOCK_SIZE);
 
     if (out.bad() || out.fail())
         goto clean;
@@ -351,8 +354,6 @@ void AES::Cipher (uint8_t state[Nb][Nl]){
     this->ShiftRows(state);
 
     this->AddRoundKey(state, roundNumber);
-
-    AES_DEBUG_MSG(endl);
 };
 
 void AES::InvCipher (uint8_t state[Nb][Nl]){
@@ -450,9 +451,8 @@ void AES::ExpandKey (uint8_t *key){
 // Apply S-Box substitution to a single word (4 bytes), to be used inside the ExpandKey method.
 void AES::SubWord (uint8_t *word){
     
-    for (uint8_t i = 0; i < Nb; i++){
+    for (uint8_t i = 0; i < Nb; i++)
         word[i] = SBox[word[i]];
-    }
 };
 
 // Simple circular rotation to the left of each byte in a word.
@@ -468,12 +468,10 @@ void AES::RotWord(uint8_t *word){
 
 /* The AddRoundKey step is a simple XOR operation between the state and the corresponding part of the RoundKey for the current round. */
 void AES::AddRoundKey (uint8_t state[Nb][Nl], uint8_t roundNumber){
-
-    for (uint8_t i = 0; i < Nb; i++){
-        for (uint8_t y = 0; y < Nl; y++){
+    
+    for (uint8_t i = 0; i < Nb; i++)
+        for (uint8_t y = 0; y < Nl; y++)
             state[i][y] ^= this->RoundKeys[(roundNumber * Nb * Nl) + (i * Nb) + y];
-        }
-    }
 };
 
 
@@ -484,20 +482,16 @@ void AES::AddRoundKey (uint8_t state[Nb][Nl], uint8_t roundNumber){
 
 void AES::SubBytes (uint8_t state[Nb][Nl]){
 
-    for (uint8_t i = 0; i < Nb; i ++){
-        for (uint8_t y = 0; y < Nl; y ++){
+    for (uint8_t i = 0; i < Nb; i ++)
+        for (uint8_t y = 0; y < Nl; y ++)
             state[i][y] = SBox[state[i][y]];
-        }
-    }
 };
 
 void AES::InvSubBytes (uint8_t state[Nb][Nl]){
 
-    for (uint8_t i = 0; i < Nb; i ++){
-        for (uint8_t y = 0; y < Nl; y ++){
+    for (uint8_t i = 0; i < Nb; i ++)
+        for (uint8_t y = 0; y < Nl; y ++)
             state[i][y] = RSBox[state[i][y]];
-        }
-    }
 };
 
 /* 
